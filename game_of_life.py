@@ -10,27 +10,29 @@
 # Iterate over board, determine next generation
 # Determine whether cells are alive or dead
 
-class CellRules:
-  transforms = [(-1,-1), (0,-1), (1,-1),
-                (-1,0),          (1,0),
-                (-1,1),  (0,1),  (1,1)]
+from GOL.Helpers import index
+from GOL.CellRules import next_state
 
-  def next_state(board, pos):
-    cell_alive = board[pos[0]][pos[1]]
+#def index(l):
+#  return zip(l, range(len(l)))
+    
 
-    neighbors = [CellRules.transform(pos, t) for t in CellRules.transforms]
-    state = [board[n[0]][n[1]] for n in neighbors if CellRules.in_board(board, n)]
-    living_neighbors = state.count(True)
+class GameOfLife:
+  def __init__(self, rows, cols):
+    self.board = [[False for c in range(cols)] for r in range(rows)]
 
-    return living_neighbors == 3 or (cell_alive and living_neighbors == 2)
+  def set_living_cells(self, cells):
+    for row, col in cells:
+      self.board[row][col] = True
 
-  def transform(pos, transform):
-    return (pos[0] + transform[0], pos[1] + transform[1])
+  def cell_alive(self, position):
+    row, col = position
+    return self.board[row][col]
 
-  def in_board(board, pos):
-    return pos[0] < len(board) and pos[1] < len(board[pos[0]]) and \
-           pos[0] >= 0 and pos[1] >= 0
-
+  def advance(self):
+    self.board = [[next_state(self.board, (ri,ci))
+      for _, ci in index(row)]
+      for row, ri in index(self.board)]
 
 def main():
   pass
